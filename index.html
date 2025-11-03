@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Search Portal</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f2f4f8;
+      color: #333;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #0078ff;
+    }
+
+    p {
+      color: #555;
+      font-size: 16px;
+      margin-top: -10px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-top: 30px;
+    }
+
+    .section {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+
+    input {
+      padding: 10px;
+      width: 80%;
+      margin: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      outline: none;
+      font-size: 15px;
+    }
+
+    button {
+      background-color: #0078ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #005fcc;
+    }
+
+    .output {
+      margin-top: 15px;
+      background: #f9fafb;
+      padding: 10px;
+      border-radius: 8px;
+      min-height: 40px;
+      font-size: 15px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      padding: 4px 0;
+    }
+
+    .found {
+      color: green;
+      font-weight: 600;
+    }
+
+    .not-found {
+      color: red;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎓 Student Search Portal</h1>
+  <p>Search student records using Binary Search Algorithm</p>
+
+  <div class="container">
+    <div class="section">
+      <h2>Add Students</h2>
+      <input type="text" id="studentInput" placeholder="Enter student name or roll no" />
+      <br>
+      <button onclick="addStudent()">Add</button>
+      <button onclick="sortStudents()">Sort Records</button>
+      <div id="students" class="output">No students added yet.</div>
+    </div>
+
+    <div class="section">
+      <h2>Search Student</h2>
+      <input type="text" id="searchInput" placeholder="Enter name or roll no" />
+      <br>
+      <button onclick="binarySearch()">Search</button>
+      <div id="result" class="output"></div>
+    </div>
+  </div>
+
+  <script>
+    let students = [];
+
+    function addStudent() {
+      const input = document.getElementById("studentInput");
+      const value = input.value.trim();
+      if (value) {
+        students.push(value);
+        input.value = "";
+        showStudents();
+      }
+    }
+
+    function showStudents() {
+      const list = students.map(s => `<li>${s}</li>`).join("");
+      document.getElementById("students").innerHTML = students.length
+        ? `<b>Students List:</b><ul>${list}</ul>`
+        : "No students added yet.";
+    }
+
+    function sortStudents() {
+      if (students.length === 0) {
+        alert("Add some students first!");
+        return;
+      }
+      // Sort case-insensitively
+      students.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+      showStudents();
+      alert("Records sorted successfully ✅");
+    }
+
+    function binarySearch() {
+      const key = document.getElementById("searchInput").value.trim().toLowerCase();
+      const resultDiv = document.getElementById("result");
+
+      if (students.length === 0) {
+        resultDiv.innerHTML = "⚠️ No students available. Add and sort records first.";
+        return;
+      }
+
+      if (!key) {
+        resultDiv.innerHTML = "⚠️ Please enter a name to search.";
+        return;
+      }
+
+      // Always ensure sorted order before searching
+      students.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+
+      let low = 0, high = students.length - 1;
+      let steps = [];
+      let found = false;
+
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        const midValue = students[mid].toLowerCase();
+
+        steps.push(`🔍 Checking middle index ${mid}: "${students[mid]}"`);
+
+        if (midValue === key) {
+          found = true;
+          steps.push(`<span class="found">✅ Found "${students[mid]}" at position ${mid + 1}.</span>`);
+          break;
+        } else if (midValue < key) {
+          low = mid + 1;
+        } else {
+          high = mid - 1;
+        }
+      }
+
+      if (!found) {
+        steps.push(`<span class="not-found">❌ "${key}" not found in the list.</span>`);
+      }
+
+      resultDiv.innerHTML = steps.join("<br>");
+    }
+  </script>
+</body>
+</html>
